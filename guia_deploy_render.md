@@ -20,28 +20,19 @@ services:
       uvicorn main:app --host 0.0.0.0 --port 10000
     plan: free
 ```
-5. Faça um conexão a partir da sua máquina com o Postgres do render e forneça as seguintes permissões para seu usuário:
+5. Faça um conexão a partir da sua máquina com o Postgres do render, crie e rode a função de criação de tabelas no arquivo ```create_tables_.sql```
+
+6. Rode o seguinte o comando para **CADA TABELA** do banco:
 
 ```sql
-GRANT CREATE ON SCHEMA public TO seu_usuario;
-GRANT USAGE ON SCHEMA public TO seu_usuario;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE telecom, ti, serv_audiovisuais, ed_e_ed_integradas_a_impressao, agencia_noticias TO seu_usuario;
+ALTER TABLE nome_da_tabela ADD COLUMN id SERIAL PRIMARY KEY;
 ```
+Por alguma razão, mesmo estando no ```create_tables.sql```, a coluna ```id``` não é criada então esta etapa deve ser executada.
 
-6. Rode o script ```criacao_tabelas.py```:
+7. Rode o script ```criacao_tabelas.py```:
 
 ```bash
 python criacao_tabelas.py
 ```
 
-7. Rode o seguinte o comando para **CADA TABELA** do banco:
-
-```sql
-ALTER TABLE nome_da_tabela ADD COLUMN id SERIAL PRIMARY KEY;
-```
-
-Por alguma razão, mesmo estando no ```create_tables.sql```, a coluna ```id``` não é criada então esta etapa deve ser executada.
-
 Seguindo esses passos, você pode fazer o deploy do projeto no Render, e a API deve funcionar normalmente.
-
-

@@ -40,4 +40,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT criar_tabelas(ARRAY[['telecom', 'agencia_noticias', 'ti', 'serv_audiovisuais', 'ed_e_ed_integradas_a_impressao']]);
+SELECT criar_tabelas(ARRAY['telecom', 'agencia_noticias', 'ti', 'serv_audiovisuais', 'ed_e_ed_integradas_a_impressao']);

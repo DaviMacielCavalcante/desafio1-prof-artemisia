@@ -108,7 +108,9 @@ def tratar_df(df):
         df[col].fillna(df[col].median(), inplace=True)
     return df
 
-executar_sql('./db/create_tables.sql');
+# Descomente e execute o seguinte comando apenas se você for rodar o projeto na sua máquina local. Não vai funcionar no render. 
+
+# executar_sql('./db/create_tables.sql');
 
 carregar_dfs('./datasets/')    
 
