@@ -1,9 +1,10 @@
 import os
 from sqlalchemy import create_engine, Column, Integer, Numeric
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import Session, sessionmaker, declarative_base, DeclarativeMeta
+from sqlalchemy.exc import SQLAlchemyError
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from typing import Type
 
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -60,7 +61,6 @@ class EdIntegradasImpressao(BaseTable):
 class AgenciaNoticias(BaseTable):
     __tablename__ = "agencia_noticias"
 
-
 class DataEntry(BaseModel):
     ano: int
     receita_liquida: float
@@ -89,6 +89,14 @@ class DataEntry(BaseModel):
     pessoal_ocupado: float
     numero_empresas: float
 
+tables = {
+    "telecom": Telecom,
+    "ti": Ti,
+    "serv_audiovisuais": ServAudiovisuais,
+    "ed_e_ed_integradas_a_impressao": EdIntegradasImpressao,
+    "agencia_noticias": AgenciaNoticias
+}
+
 # Função de dependência para obter sessão de banco de dados
 def get_db():
     db = SessionLocal()
@@ -103,14 +111,23 @@ app = FastAPI()
 # CRUD Operations (aplica para todas as tabelas)
 @app.post("/data/{table}/", response_model=DataEntry)
 def create_data(table: str, data_entry: DataEntry, db: Session = Depends(get_db)):
-    model_class = globals().get(table.capitalize())
+    
+    model_class: Type[DeclarativeMeta] = tables.get(table.lower()) 
+
     if not model_class:
         raise HTTPException(status_code=404, detail="Table not found")
-    new_entry = model_class(**data_entry.dict())
-    db.add(new_entry)
-    db.commit()
-    db.refresh(new_entry)
-    return new_entry
+    
+    
+    try:
+        new_entry = model_class(**data_entry.dict())
+        db.add(new_entry)
+        db.commit()
+        db.refresh(new_entry)
+        return new_entry
+    except SQLAlchemyError as e:
+        db.rollback()
+        print(f"Transaction error: {e}")
+    
 
 @app.get("/data/{table}/", response_model=list[DataEntry])
 def get_data(table: str, db: Session = Depends(get_db)):
