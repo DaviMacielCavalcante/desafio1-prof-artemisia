@@ -1,133 +1,137 @@
-# Documentação da API (main.py)
+# **API Documentation (main.py)**
 
-Esta API foi desenvolvida para operações CRUD em tabelas específicas de um banco de dados PostgreSQL. Abaixo está a descrição detalhada de cada endpoint, os modelos de dados usados e como configurar a aplicação para deploy.
+This API was developed for CRUD operations on specific tables in a PostgreSQL database. Below is a detailed description of each endpoint, the data models used, and how to configure the application for deployment.
 
 ---
 
-## Endpoints
+## **Endpoints**
 
-### 1. Criar nova entrada de dados
+### **1. Create a New Data Entry**
 
 - **URL**: `/data/{table}/`
-- **Método**: `POST`
-- **Descrição**: Insere uma nova entrada na tabela especificada.
-- **Parâmetros**:
-  - `table` (path): Nome da tabela (ex.: `telecom`, `ti`, `serv_audiovisuais`).
-- **Corpo da Requisição**:
+- **Method**: `POST`
+- **Description**: Inserts a new entry into the specified table.
+- **Parameters**:
+  - `table` (path): Table name (e.g., `telecom`, `ti`, `serv_audiovisuais`).
+- **Request Body**:
   ```json
   {
       "ano": 2022,
       "receita_liquida": 5000.00,
-      "custo_mercadorias": 1500.00,
-      ...
+      "custo_mercadorias": 1500.00
   }
-    ```
+  ```
 
-Resposta: `201 Created`, retorna a entrada criada.
+**Response**: `201 Created`, returns the created entry.
 
-2. Listar todas as entradas de uma tabela: 
+### **2. List All Entries in a Table**
 
 - **URL**: `/data/{table}/`
-- **Método**: `GET`
-- **Descrição**: Retorna uma lista de todas as entradas de uma tabela.
-- **Parâmetros**:
-    - `table` (path): Nome da tabela.
+- **Method**: `GET`
+- **Description**: Returns a list of all entries in a table.
+- **Parameters**:
+    - `table` (path): Table name.
 
-- **Resposta**: `200 OK`, retorna uma lista de objetos `DataEntry`.
+**Response**: `200 OK`, returns a list of `DataEntry` objects.
 
-3. Obter entrada por ano
-
-- **URL**: `/data/{table}/{year}`
-- **Método**: `GET`
-- **Descrição**: Retorna uma entrada específica de um ano em uma tabela.
-- **Parâmetros**:
-    - `table` (path): Nome da tabela.
-    - `year` (path): Ano específico.
-
-- **Resposta**: `200 OK`, retorna o objeto `DataEntry`.
-
-4. Atualizar entrada por ano
+### **3. Get Entry by Year**
 
 - **URL**: `/data/{table}/{year}`
-- **Método**: `PUT`
-- **Descrição**: Atualiza uma entrada existente com os dados fornecidos.
-- **Parâmetros**:
-    - `table` (path): Nome da tabela.
-    - `year` (path): Ano específico da entrada a ser atualizada.
-- **Corpo da Requisição**:
+- **Method**: `GET`
+- **Description**: Returns a specific entry for a given year in a table.
+- **Parameters**:
+    - `table` (path): Table name.
+    - `year` (path): Specific year.
+
+**Response**: `200 OK`, returns a `DataEntry` object.
+
+### **4. Update Entry by Year**
+
+- **URL**: `/data/{table}/{year}`
+- **Method**: `PUT`
+- **Description**: Updates an existing entry with the provided data.
+- **Parameters**:
+    - `table` (path): Table name.
+    - `year` (path): Specific year of the entry to be updated.
+- **Request Body**:
+  ```json
+  {
+      "ano": 2022,
+      "receita_liquida": 5500.00
+  }
+  ```
+
+**Response**: `200 OK`, returns the updated entry.
+
+### **5. Delete Entry by Year**
+
+- **URL**: `/data/{table}/{year}`
+- **Method**: `DELETE`
+- **Description**: Removes a specific entry for a given year in a table.
+- **Parameters**:
+    - `table` (path): Table name.
+    - `year` (path): Specific year.
+
+**Response**: `200 OK`, returns a confirmation message.
+
+---
+
+## **Data Models: `DataEntry`**
+
+Model used to represent and validate the input and output data of the API.
+
 ```json
 {
-    "ano": 2022,
-    "receita_liquida": 5500.00,
-    ...
+    "ano": int,
+    "receita_liquida": float,
+    "custo_mercadorias": float,
+    "subvencoes_receitas_op": float,
+    "valor_bruto_producao": float,
+    "consumo_intermediario_total": float,
+    "consumo_combustiveis": float,
+    "numero_empresas": float
 }
 ```
 
-**Resposta**: `200 OK`, retorna a entrada atualizada.
+### **Table Structure**
+All tables have a similar base structure, with fields for financial data, consumption, and company numbers.
 
-5. Excluir entrada por ano
+---
 
-- **URL**: `/data/{table}/{year}`
-- **Método**: `DELETE`
-- **Descrição**: Remove uma entrada específica de um ano em uma tabela.
-- **Parâmetros**:
-    - `table` (path): Nome da tabela.
-    - `year` (path): Ano específico.
-- **Resposta**: `200 OK`, retorna uma mensagem de confirmação.
-**Modelos de Dados**: `DataEntry`
-Modelo usado para representar e validar os dados de entrada e saída da API.
+## **Usage Examples**
 
-```json
-    {
-        "ano": int,
-        "receita_liquida": float,
-        "custo_mercadorias": float,
-        "subvencoes_receitas_op": float,
-        "valor_bruto_producao": float,
-        "consumo_intermediario_total": float,
-        "consumo_combustiveis": float,
-        "numero_empresas": float
-    }
-```
-
-### Estrutura das Tabelas
-Todas as tabelas possuem uma estrutura base similar, com campos de dados financeiros, consumo e número de empresas.
-
-
-#### Exemplo de Uso
-
-1. Criar uma nova entrada:
-
+### **1. Create a New Entry:**
 ```bash
 curl -X POST "http://localhost:8000/data/telecom/" -d '{
     "ano": 2023,
-    "receita_liquida": 4500.0,
-    ...
+    "receita_liquida": 4500.0
 }'
 ```
-2. Listar todas as entradas de uma tabela:
 
+### **2. List All Entries in a Table:**
 ```bash
 curl -X GET "http://localhost:8000/data/telecom/"
 ```
 
-3. Obter dados por ano:
-
+### **3. Get Data by Year:**
 ```bash
 curl -X GET "http://localhost:8000/data/telecom/2022"
 ```
-4. Atualizar dados:
 
+### **4. Update Data:**
 ```bash
 curl -X PUT "http://localhost:8000/data/telecom/2022" -d '{
     "ano": 2022,
-    "receita_liquida": 4800.0,
-    ...
+    "receita_liquida": 4800.0
 }'
 ```
-5. Excluir dados:
 
+### **5. Delete Data:**
 ```bash
 curl -X DELETE "http://localhost:8000/data/telecom/2022"
 ```
+
+---
+
 *Through victory, my chains are broken. The Force shall free me.*
+
