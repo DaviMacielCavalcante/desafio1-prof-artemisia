@@ -1,14 +1,22 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+class GerarSessao:
+    def __init__(self, database_url):
+        self.engine = create_engine(database_url)
+        self.sessionlocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    @property
+    def get_engine(self):
+        return self.engine
+    
+    @property
+    def get_sessionlocal(self):
+        return self.sessionlocal
+
+    def get_db(self):
+        db = self.sessionlocal()
+        try:
+            yield db
+        finally:
+            db.close()
