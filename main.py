@@ -18,6 +18,9 @@ DataEntry = ModeloDeDadosDeEnvio.DataEntry
 # FastAPI app
 app = FastAPI()
 
+TABLE_NOT_FOUND = "Table not found"
+DATA_NOT_FOUND = "Data not found"
+
 # CRUD Operations (aplica para todas as tabelas)
 @app.post("/data/{table}/", response_model=DataEntry)
 def create_data(table: str, data_entry: DataEntry, db: Session = Depends(get_db)):
@@ -25,7 +28,7 @@ def create_data(table: str, data_entry: DataEntry, db: Session = Depends(get_db)
     model_class: Type[DeclarativeMeta] = tabelas_geradas.get(table.lower()) 
 
     if not model_class:
-        raise HTTPException(status_code=404, detail="Table not found")
+        raise HTTPException(status_code=404, detail=Erros.table)
     
     try:
         new_entry = model_class(**data_entry.dict())
@@ -42,7 +45,7 @@ def create_data(table: str, data_entry: DataEntry, db: Session = Depends(get_db)
 def get_data(table: str, db: Session = Depends(get_db)):
     model_class = globals().get(table.capitalize())
     if not model_class:
-        raise HTTPException(status_code=404, detail="Table not found")
+        raise HTTPException(status_code=404, detail=TABLE_NOT_FOUND)
     data = db.query(model_class).all()
     return data
 
@@ -50,20 +53,20 @@ def get_data(table: str, db: Session = Depends(get_db)):
 def get_data_by_year(table: str, year: int, db: Session = Depends(get_db)):
     model_class = globals().get(table.capitalize())
     if not model_class:
-        raise HTTPException(status_code=404, detail="Table not found")
+        raise HTTPException(status_code=404, detail=TABLE_NOT_FOUND)
     data = db.query(model_class).filter(model_class.ano == year).first()
     if not data:
-        raise HTTPException(status_code=404, detail="Data not found")
+        raise HTTPException(status_code=404, detail=DATA_NOT_FOUND)
     return data
 
 @app.put("/data/{table}/{year}", response_model=DataEntry)
 def update_data(table: str, year: int, data_entry: DataEntry, db: Session = Depends(get_db)):
     model_class = globals().get(table.capitalize())
     if not model_class:
-        raise HTTPException(status_code=404, detail="Table not found")
+        raise HTTPException(status_code=404, detail=TABLE_NOT_FOUND)
     existing_data = db.query(model_class).filter(model_class.ano == year).first()
     if not existing_data:
-        raise HTTPException(status_code=404, detail="Data not found")
+        raise HTTPException(status_code=404, detail=DATA_NOT_FOUND)
     for key, value in data_entry.dict().items():
         setattr(existing_data, key, value)
     db.commit()
@@ -74,10 +77,10 @@ def update_data(table: str, year: int, data_entry: DataEntry, db: Session = Depe
 def delete_data(table: str, year: int, db: Session = Depends(get_db)):
     model_class = globals().get(table.capitalize())
     if not model_class:
-        raise HTTPException(status_code=404, detail="Table not found")
+        raise HTTPException(status_code=404, detail=TABLE_NOT_FOUND)
     data = db.query(model_class).filter(model_class.ano == year).first()
     if not data:
-        raise HTTPException(status_code=404, detail="Data not found")
+        raise HTTPException(status_code=404, detail=DATA_NOT_FOUND)
     db.delete(data)
     db.commit()
     return {"detail": "Data deleted successfully"}
