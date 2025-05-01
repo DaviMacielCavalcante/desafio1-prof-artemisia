@@ -6,8 +6,8 @@ BEGIN
 	FOREACH nome IN ARRAY nomes
 	LOOP
 		BEGIN
-			EXECUTE format(
-				'CREATE TABLE IF NOT EXISTS %I (
+			EXECUTE format($$
+				CREATE TABLE IF NOT EXISTS %I (
 				id SERIAL PRIMARY KEY,
 				ano INT UNIQUE NOT NULL,
 				receita_liquida NUMERIC(12,2) NOT NULL,	
@@ -36,7 +36,7 @@ BEGIN
 				pessoal_ocupado NUMERIC(12,2) NOT NULL, 
 				numero_empresas NUMERIC(12,2) NOT NULL
 			)
-			', nome);
+			$$, nome);
 			 RAISE NOTICE 'Tabela % criada com sucesso.', nome;
         EXCEPTION
             WHEN OTHERS THEN
