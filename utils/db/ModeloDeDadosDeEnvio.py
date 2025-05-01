@@ -1,0 +1,29 @@
+from pydantic import BaseModel
+
+class DataEntry(BaseModel):
+    ano: int
+    receita_liquida: float
+    custo_mercadorias: float
+    subvencoes_receitas_op: float
+    valor_bruto_producao: float
+    consumo_intermediario_total: float
+    consumo_mercadorias_reposicao: float
+    consumo_combustiveis: float
+    consumo_servicos_terceiros: float
+    consumo_alugueis_imoveis: float
+    consumo_seguros: float
+    consumo_comunicacao: float
+    consumo_energia_gas_agua: float
+    consumo_outros_custos: float
+    valor_adicionado_bruto: float
+    gastos_pessoal_total: float
+    gastos_salarios_remuneracoes: float
+    gastos_previdencia_social: float
+    gastos_fgts: float
+    gastos_previdencia_privada: float
+    gastos_indenizacoes_trabalhistas: float
+    gastos_beneficios_empregados: float
+    pis_folha_pagamento: float
+    excedente_operacional_bruto: float
+    pessoal_ocupado: float
+    numero_empresas: float
