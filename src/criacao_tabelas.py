@@ -2,15 +2,17 @@ import pandas as pd
 import numpy as np
 import os 
 import warnings
+from utils.db import GeradorDeSessao
+from sqlalchemy import text
 
-from sqlalchemy import create_engine, text
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 pd.options.display.float_format = '{:.2f}'.format
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-engine = create_engine(DATABASE_URL)
+sessao = GeradorDeSessao.GerarSessao(DATABASE_URL)
+engine = sessao.get_engine
 
 dataframes = {}
 dataframes_atualizados = {}
@@ -48,6 +50,19 @@ Obs: Usar apenas em colunas que você sabe, via boxplot, que possuam outliers.
     df.loc[df[col] < lower_bound, df[col]] = median
     df.loc[df[col] > upper_bound, df[col]] = median
 
+
+def gerar_dataframes(xls: pd.ExcelFile, sheet_name: str ,sheet_renames: dict):
+
+    if sheet_name in sheet_renames:
+
+                    if sheet_name in sheet_renames.keys():
+                        df_nome = sheet_renames[sheet_name]
+                    else:
+                        df_nome = sheet_name  
+
+                    df = pd.read_excel(xls, sheet_name=sheet_name, skiprows=4)
+                    dataframes[df_nome] = df
+
 def carregar_dfs(path):
     """
     Função para retirar cada sheet presente no arqui xlsx,
@@ -66,16 +81,8 @@ def carregar_dfs(path):
                 'Notas': 'notas'
             }
             for sheet_name in xls.sheet_names:
-
-                if sheet_name in sheet_renames:
-
-                    if sheet_name in sheet_renames.keys():
-                        df_nome = sheet_renames[sheet_name]
-                    else:
-                        df_nome = sheet_name  
-
-                    df = pd.read_excel(xls, sheet_name=sheet_name, skiprows=4)
-                    dataframes[df_nome] = df
+                gerar_dataframes(xls, sheet_name, sheet_renames)
+                
     
 def tratar_df(df):
     
