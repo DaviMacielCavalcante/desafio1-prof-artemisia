@@ -6,8 +6,8 @@ BEGIN
 	FOREACH nome IN ARRAY nomes
 	LOOP
 		BEGIN
-			EXECUTE format('
-				CREATE TABLE IF NOT EXISTS %I (
+			EXECUTE format(
+				'CREATE TABLE IF NOT EXISTS %I (
 				id SERIAL PRIMARY KEY,
 				ano INT UNIQUE NOT NULL,
 				receita_liquida NUMERIC(12,2) NOT NULL,	
