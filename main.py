@@ -36,7 +36,7 @@ def create_data(table: str, data_entry: DataEntry, db: Session = Depends(get_db)
         raise HTTPException(status_code=404, detail=Erros.table)
     
     try:
-        new_entry = model_class(**data_entry.dump())
+        new_entry = model_class(**data_entry.dict())
         db.add(new_entry)
         db.commit()
         db.refresh(new_entry)
@@ -72,7 +72,7 @@ def update_data(table: str, year: int, data_entry: DataEntry, db: Session = Depe
     existing_data = db.query(model_class).filter(model_class.ano == year).first()
     if not existing_data:
         raise HTTPException(status_code=404, detail=DATA_NOT_FOUND)
-    for key, value in data_entry.dump().items():
+    for key, value in data_entry.dict().items():
         setattr(existing_data, key, value)
     db.commit()
     db.refresh(existing_data)
