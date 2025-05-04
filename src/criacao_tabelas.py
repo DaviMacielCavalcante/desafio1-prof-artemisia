@@ -1,8 +1,10 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
 import numpy as np
-import os 
 import warnings
-from utils.db import GeradorDeSessao
+from utils.db.GeradorDeSessao import GerarSessao
 from sqlalchemy import text
 
 
@@ -11,7 +13,7 @@ warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 pd.options.display.float_format = '{:.2f}'.format
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-sessao = GeradorDeSessao.GerarSessao(DATABASE_URL)
+sessao = GerarSessao(DATABASE_URL)
 engine = sessao.get_engine
 
 dataframes = {}
@@ -19,34 +21,23 @@ dataframes_atualizados = {}
 
 def executar_sql(sql_file_path):
     with open(sql_file_path, 'r') as file:
-        sql_query = file.read()
-    comandos = sql_query.split(';')
+        sql_script = file.read()
 
     with engine.connect() as conn:
-        for comando in comandos:
-            comando = comando.strip()
-            if comando:
-                conn.execute(text(comando))
-
+        conn.execute(text(sql_script).execution_options(autocommit=True))
+    
 
 def replace_outliers_by_median(df, col):
-    """
-Função criada para substituir outliers de um pequeno conjunto de dados pela mediana. 
-Obs: Usar apenas em colunas que você sabe, via boxplot, que possuam outliers.
-    """
-    # Calcular os quartis e o intervalo interquartil (IQR)
+
     Q1 = df[col].quantile(0.25)
     Q3 = df[col].quantile(0.75)
     IQR = Q3 - Q1
 
-    # Definir os limites para outliers
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
 
-    # Calcular a mediana
     median = df[col].median()
 
-    # Substituir os outliers pela mediana
     df.loc[df[col] < lower_bound, df[col]] = median
     df.loc[df[col] > upper_bound, df[col]] = median
 
@@ -64,10 +55,7 @@ def gerar_dataframes(xls: pd.ExcelFile, sheet_name: str ,sheet_renames: dict):
                     dataframes[df_nome] = df
 
 def carregar_dfs(path):
-    """
-    Função para retirar cada sheet presente no arqui xlsx,
-    e adicionar em um dicionario de dataframes
-    """
+ 
     for arquivo in os.listdir(path):
         if arquivo.endswith(".xlsx"):
             file_path = os.path.join(path, arquivo)
@@ -117,7 +105,7 @@ def tratar_df(df):
 
 # Descomente e execute o seguinte comando apenas se você for rodar o projeto na sua máquina local. Não vai funcionar no render. 
 
-# executar_sql('./db/create_tables.sql');
+executar_sql('./db/create_tables.sql');
 
 carregar_dfs('./datasets/')    
 

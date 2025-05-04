@@ -6,8 +6,8 @@ BEGIN
 	FOREACH nome IN ARRAY nomes
 	LOOP
 		BEGIN
-			EXECUTE format($$
-				CREATE TABLE IF NOT EXISTS %I (
+			EXECUTE format($fmt$
+				CREATE TABLE IF NOT EXISTS % (
 				id SERIAL PRIMARY KEY,
 				ano INT UNIQUE NOT NULL,
 				receita_liquida NUMERIC(12,2) NOT NULL,	
@@ -36,11 +36,12 @@ BEGIN
 				pessoal_ocupado NUMERIC(12,2) NOT NULL, 
 				numero_empresas NUMERIC(12,2) NOT NULL
 			)
-			$$, nome);
+			$fmt$, nome);
 			 RAISE NOTICE 'Tabela % criada com sucesso.', nome;
         EXCEPTION
             WHEN OTHERS THEN
                 RAISE WARNING 'Erro ao criar a tabela %: %', nome, SQLERRM;
+		END;
 	END LOOP;
 END;
 $$ LANGUAGE plpgsql;
