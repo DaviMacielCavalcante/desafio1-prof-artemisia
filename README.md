@@ -25,14 +25,16 @@ This project was developed as part of an ETL challenge for beginners. The goal i
    ```bash
    pip install -r requirements.txt
 3. Install PostgreSQL on your machine.
-4. Create a .env file with the following variables
-```
-DATABASE_PORT = port your database is using
-DATABASE_NAME = name of your database
-DATABASE_USERNAME = user with access to the database
-DATABASE_PASSWORD = user's password
-DATABASE_URL = your database's address
-```
+4. Install UV packet manager
+5. Run the following commands
+   ```bash
+   uv init
+   uv venv
+   uv sync
+7. Create a .env file with the following variables
+   ```
+   DATABASE_URL = your database's address
+   ```
 5. Run the script responsible for creating the database schema in PostgreSQL:
    ```bash
    python criacao_tabelas.py
