@@ -3,7 +3,7 @@ services:
     name: desafio-app
     env: python
     buildCommand: |
-      pip install -r requirements.txt
+      uv pip install -r requirements.txt
       python criacao_tabelas.py
     startCommand: |
       uvicorn main:app --host 0.0.0.0 --port 10000
