@@ -20,13 +20,10 @@ services:
       uvicorn main:app --host 0.0.0.0 --port 10000
     plan: free
 ```
-5. Faça um conexão a partir da sua máquina com o Postgres do render, crie e rode a função de criação de tabelas no arquivo ```create_tables_.sql```
+5. Faça um conexão a partir da sua máquina com o Postgres do render, crie e rode a função de criação de tabelas no arquivo ```create_tables.sql```
 
-6. Rode o seguinte o comando para **CADA TABELA** do banco:
+6. Rode o seguinte o script, via pgadmin ou outro programa de sua preferência no banco:```add_id_column.sql```
 
-```sql
-ALTER TABLE nome_da_tabela ADD COLUMN id SERIAL PRIMARY KEY;
-```
 Por alguma razão, mesmo estando no ```create_tables.sql```, a coluna ```id``` não é criada então esta etapa deve ser executada.
 
 7. Rode o script ```criacao_tabelas.py```:
