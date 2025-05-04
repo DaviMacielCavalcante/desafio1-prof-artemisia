@@ -3,6 +3,8 @@ services:
     name: desafio-app
     env: python
     buildCommand: |
+      uv install
+      uv venv
       uv sync
       python criacao_tabelas.py
     startCommand: |
