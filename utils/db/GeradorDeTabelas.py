@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, Numeric
 from typing import Type
-from sqlalchemy.orm import declarative_base, DeclarativeMeta
+from sqlalchemy.orm import DeclarativeMeta
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
